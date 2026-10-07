@@ -1,0 +1,28 @@
+#====================================================================
+# Synthesis Script for Chacha20
+#
+# NOTE: '<PATH_TO_YOUR_LIBERTY_FILE>' is substituted automatically by
+# `make syn LIB=/abs/path/to/<lib>.lib`. If running yosys manually, replace
+# it yourself with the absolute path to your standard-cell library
+# (e.g., Sky130, ASAP7, etc.).
+#====================================================================
+
+
+read_verilog chacha20.v
+
+# Set parameter
+chparam -set ITERATIONS 10 chacha20
+
+synth -top chacha20
+flatten
+
+# Map flip-flops and combinational logic to the target standard-cell library.
+dfflibmap -liberty <PATH_TO_YOUR_LIBERTY_FILE>
+
+abc -fast -liberty <PATH_TO_YOUR_LIBERTY_FILE> -constr constr.txt
+
+clean
+
+# Generate statistics and netlist
+tee -o build/reports/report.txt stat -liberty <PATH_TO_YOUR_LIBERTY_FILE>
+write_verilog build/reports/netlist.v

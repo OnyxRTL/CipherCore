@@ -1,0 +1,1 @@
+set_driving_cell -lib_cell sky130_fd_sc_hd__buf_4 -lib_pin X [all_inputs]
