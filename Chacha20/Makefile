@@ -13,6 +13,17 @@ SYN_DIR   = $(BUILD_DIR)/reports
 #   or: export LIB=/path/to/...
 LIB ?=
 
+# Pick the constraint file based on the Liberty filename
+ifeq ($(findstring sky130,$(LIB)),sky130)
+  CONSTR := constr_sky130.txt
+else ifeq ($(findstring sg13g2,$(LIB)),sg13g2)
+  CONSTR := constr_ihp.txt
+else ifeq ($(findstring Nangate,$(LIB)),Nangate)
+  CONSTR := constr_nangate.txt
+else
+  $(error Cannot determine PDK from LIB=$(LIB). Expected sky130, sg13g2, or Nangate in the filename.)
+endif
+
 sim:
 	@rm -rf $(SIM_DIR)
 	@mkdir -p $(SIM_DIR)
@@ -38,7 +49,9 @@ check-lib:
 syn: check-lib
 	@rm -rf $(SYN_DIR)
 	@mkdir -p $(SYN_DIR)
-	@sed "s|<PATH_TO_YOUR_LIBERTY_FILE>|$(LIB)|g" synth.ys > $(SYN_DIR)/synth_run.ys
+	@sed -e "s|<PATH_TO_YOUR_LIBERTY_FILE>|$(LIB)|g" \
+	     -e "s|<PATH_TO_CONSTR_FILE>|$(CONSTR)|g" \
+	     synth.ys > $(SYN_DIR)/synth_run.ys
 	@yosys -s $(SYN_DIR)/synth_run.ys 2>&1 | tee $(SYN_DIR)/yosys.log
 
 # Pre-routing STA on the netlist produced by `syn`.

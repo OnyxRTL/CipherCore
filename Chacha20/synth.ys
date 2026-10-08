@@ -19,7 +19,7 @@ flatten
 # Map flip-flops and combinational logic to the target standard-cell library.
 dfflibmap -liberty <PATH_TO_YOUR_LIBERTY_FILE>
 
-abc -fast -liberty <PATH_TO_YOUR_LIBERTY_FILE> -constr constr.txt
+abc -fast -liberty <PATH_TO_YOUR_LIBERTY_FILE> -constr <PATH_TO_CONSTR_FILE>
 
 clean
 

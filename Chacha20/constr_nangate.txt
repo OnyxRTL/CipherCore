@@ -1,0 +1,1 @@
+set_driving_cell -lib_cell BUF_X4 -lib_pin Z [all_inputs]

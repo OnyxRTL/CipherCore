@@ -1,0 +1,1 @@
+set_driving_cell -lib_cell sg13g2_buf_4 -lib_pin X [all_inputs]
