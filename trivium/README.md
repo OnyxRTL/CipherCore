@@ -4,4 +4,4 @@ A lightweight hardware implementation of the Trivium stream cipher in synthesisa
 
 ## Status
 
-This core is **in development**. Simulation-based verification is available. Synthesis, static timing analysis, and formal verification are not yet completed
+This core is **in development**. Simulation-based verification is available. Synthesis, static timing analysis are not yet completed
