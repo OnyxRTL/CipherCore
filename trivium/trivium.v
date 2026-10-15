@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //==============================================================================
-// Copyright (c) 2026 opensiliconhub contributors
+// Copyright (c) 2026 onyxrtl contributors
 // SPDX-License-Identifier : Apache-2.0
 //
 // Module: trivium

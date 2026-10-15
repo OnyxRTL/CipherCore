@@ -1,14 +1,3 @@
-<pre align="center">
- ██████╗ ███████╗██╗  ██╗
-██╔═══██╗██╔════╝██║  ██║
-██║   ██║███████╗███████║
-██║   ██║╚════██║██╔══██║
-╚██████╔╝███████║██║  ██║
- ╚═════╝ ╚══════╝╚═╝  ╚═╝
-
- CipherCore
-</pre>
-
 <p align="center"><i>A growing collection of reusable Verilog cryptographic hardware cores.</i></p>
 
 ---
@@ -33,7 +22,7 @@ Target flows include open-source RTL-to-GDS (Yosys, OpenSTA, Sky130) as well as 
 Clone the repository and run a core:
 
 ```sh
-git clone https://github.com/OpenSiliconHub/CipherCore.git
+git clone https://github.com/OnyxRTL/CipherCore.git
 cd CipherCore/chacha20
 
 make sim                  # run all testbenches
