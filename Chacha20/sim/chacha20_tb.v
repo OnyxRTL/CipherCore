@@ -115,6 +115,40 @@ module chacha20_tb;
     en = 0;
     wait(ready);
 
+    // Mid-operation reset test
+    @(posedge clk);
+    key = 256'h000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f;
+    nonce = 96'h000000090000004a00000000;
+    block_count = 32'h00000001;
+    en = 1;
+
+    repeat(5) @(posedge clk);
+
+    en = 0;
+    rst_n = 0;
+    @(posedge clk);
+    rst_n = 1;
+
+    wait(ready);
+    @(posedge clk);
+
+    en = 1;
+    wait(valid);
+    @(posedge clk);
+
+    if (out === EXPECTED_1) begin
+        $display("[PASS] Mid-operation Reset");
+    end else begin
+        $display("[FAIL] Mid-operation Reset");
+        $display("Expected:\n%h\n", EXPECTED_1);
+        $display("Generated: %h", out);
+    end
+
+    $display("");
+
+    en = 0;
+    wait(ready);
+
     #20
     $finish(0);
   end
