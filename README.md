@@ -36,6 +36,7 @@ Each core directory is self-contained. The `Makefile` in cores that support it d
 ## What's Inside
 
 - **[ChaCha20](./chacha20/)** — parameterised ChaCha8/12/20 stream cipher core.
+- **[SPECK](./SPECK/)** - parameterized Speck block cipher family
 - **[Trivium](./trivium/)** — lightweight stream cipher core.
 
 Each core has its own README with details on verification, synthesis, and usage.
