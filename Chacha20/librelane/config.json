@@ -1,0 +1,10 @@
+{
+  "DESIGN_NAME": "chacha20",
+  "VERILOG_FILES": ["dir::../chacha20.v"],
+  "SYNTH_PARAMETERS": ["ITERATIONS=10"],
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 23.0,
+  "FP_CORE_UTIL": 30,
+  "RUN_POST_GRT_DESIGN_REPAIR": true,
+  "RUN_POST_GRT_RESIZER_TIMING": true
+}

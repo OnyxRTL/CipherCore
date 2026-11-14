@@ -43,7 +43,7 @@ Area and timing were estimated with an open-source flow (Yosys for synthesis, Op
 | Liberty file | `sky130_fd_sc_hd__tt_025C_1v80.lib` | `sg13g2_stdcell_typ_1p20V_25C.lib` | `NangateOpenCellLibrary_typical.lib` |
 | Nominal voltage | 1.80 V | 1.20 V | 1.10 V |
 | Corner | TT, 25 °C, 1.80 V | typ, 25 °C, 1.20 V | typical |
-| Input driving cell | `sky130_fd_sc_hd__buf_4` (see `constr.txt`) | `sg13g2_buf_4` (see `constr.txt`) | `BUF_X4` (see `constr.txt`) |
+| Input driving cell | `sky130_fd_sc_hd__buf_4` (see `constr_sky130.txt`) | `sg13g2_buf_4` (see `constr_ihp.txt`) | `BUF_X4` (see `constr_nangate.txt`) |
 | Timing tool | OpenSTA 3.1.0 | OpenSTA 3.1.0 | OpenSTA 3.1.0 |
 
 ### Area
@@ -161,3 +161,117 @@ Outputs are written to `build/reports/`:
 | `netlist.v` | Synthesized gate-level netlist |
 | `yosys.log` / `sta.log` | Full tool logs (including the Fmax summary) |
 | `worst_path.rpt` | Worst setup path from OpenSTA |
+
+## Post-Route Results: Sky130 RTL-to-GDSII
+
+The `ITERATIONS = 10` (ChaCha20) core was taken from RTL to a routed, signed-off GDSII layout on sky130_fd_sc_hd with [LibreLane](https://github.com/librelane/librelane). Timing is from post-route static timing analysis with extracted parasitics at all nine of LibreLane's sky130 corners (min, nom and max interconnect, each at SS, TT and FF). `make gds` reproduces every number in this section.
+
+### Configuration
+
+| Item | Value |
+|---|---|
+| Flow | LibreLane 3.1.0.dev4 (`ghcr.io/librelane/librelane:3.1.0.dev4`) |
+| PDK | sky130A from open_pdks `792ef67037d74c8c51811eab3ce23cf793491296`, the revision LibreLane 3.1.0.dev4 pins |
+| Standard cells | sky130_fd_sc_hd |
+| Clock | 23.0 ns (43.48 MHz) |
+| Core utilisation target | 30 % |
+| Post-global-route repair | design repair and timing repair enabled |
+| Everything else | LibreLane defaults: I/O delay 20 % of the clock period, clock uncertainty 0.25 ns, input driver `inv_2`, output load 33.442 fF |
+| Configuration file | `librelane/config.json` |
+
+### Timing (Post-Route)
+
+| Corner | Setup worst slack | Hold worst slack | Setup violations | Hold violations |
+|---|---|---|---|---|
+| max_ss_100C_1v60 | **+0.310 ns** | +0.848 ns | 0 | 0 |
+| nom_ss_100C_1v60 | +0.917 ns | +0.839 ns | 0 | 0 |
+| min_ss_100C_1v60 | +1.480 ns | +0.832 ns | 0 | 0 |
+| max_tt_025C_1v80 | +10.97 ns | +0.314 ns | 0 | 0 |
+| nom_tt_025C_1v80 | +11.29 ns | +0.310 ns | 0 | 0 |
+| min_tt_025C_1v80 | +11.62 ns | +0.307 ns | 0 | 0 |
+| max_ff_n40C_1v95 | +15.36 ns | +0.122 ns | 0 | 0 |
+| nom_ff_n40C_1v95 | +15.57 ns | +0.115 ns | 0 | 0 |
+| min_ff_n40C_1v95 | +15.79 ns | +0.112 ns | 0 | 0 |
+
+Setup and hold are met at every corner. The slow corner (SS, 100 °C, 1.60 V) sets the clock. LibreLane's electrical-rule report at the worst corner, max_ss_100C_1v60, lists 8,052 max-slew, 70 max-capacitance and 186 max-fanout (limit 10) warnings. LibreLane reports them as warnings, and the flow completes with exit status 0.
+
+### Area
+
+| Metric | Value |
+|---|---|
+| Die | 650.82 µm × 661.54 µm = 430,543 µm² (0.431 mm²) |
+| Core | 408,704 µm² |
+| Standard-cell instances | 26,633 |
+| Standard-cell area | 176,658 µm² |
+| Final utilisation | 43.2 % |
+| Flip-flops | 1,936 |
+| Clock tree | 190 clock buffers, 83 clock inverters |
+| Routed wirelength | 1,372,563 µm |
+
+Final utilisation is above the 30 % target because timing and electrical repair add buffers and upsize cells after placement.
+
+### Physical Verification
+
+| Check | Result |
+|---|---|
+| Detailed-routing DRC | 0 |
+| Magic DRC | 0 |
+| KLayout DRC | 0 |
+| Magic and KLayout stream-out XOR | 0 differences |
+| Netgen LVS | 0 errors, circuits match |
+| Antenna | 1 net (2 pins) above the antenna ratio after LibreLane's diode repair |
+
+The layout was also rechecked outside LibreLane with a separate tool build and a separate sky130A install: Magic 8.3.678 DRC 0 violations, Netgen 1.5.323 LVS "Circuits match uniquely", KLayout 0.30.9 DRC 0 violations.
+
+### Power
+
+| Corner | Internal | Switching | Leakage | Total |
+|---|---|---|---|---|
+| nom_tt_025C_1v80 | 6.071 mW | 5.114 mW | 0.13 µW | **11.18 mW** |
+| nom_ss_100C_1v60 | 4.804 mW | 3.997 mW | 96.1 µW | 8.90 mW |
+| nom_ff_n40C_1v95 | 6.981 mW | 6.032 mW | 0.27 µW | 13.01 mW |
+
+At 43.48 MHz, from OpenROAD's post-route power report in the LibreLane run.
+
+### Tool Versions
+
+| Tool | Version |
+|---|---|
+| LibreLane | 3.1.0.dev4 |
+| OpenROAD | `dcf36133a369abc8f3c5e5738cd4d82e4903c0e0` |
+| OpenSTA | 2.7.0 |
+| Yosys | 0.69 |
+| Magic | 8.3.677 |
+| Netgen | 1.5.323 |
+| KLayout | 0.30.12 |
+| Verilator (lint) | 5.046 |
+
+### What Changes the Results
+
+**Clock.** With every other setting the same, a 10 ns (100 MHz) clock routes with 0 DRC and 0 LVS errors and meets setup and hold at every TT and FF corner, with +3.19 ns setup slack at nom_tt_025C_1v80. That confirms the 103.69 MHz pre-route estimate above at TT. At the slow corner it misses setup by 3.42 ns and hold by 0.31 ns. The slow-corner setup slack across the clock sweep:
+
+| Clock period | 10 ns | 12.5 ns | 15 ns | 20 ns | 22.5 ns | **23 ns** | 24 ns | 25 ns |
+|---|---|---|---|---|---|---|---|---|
+| max_ss setup slack | −3.42 ns | −3.30 ns | −2.79 ns | −2.42 ns | −0.19 ns | **+0.31 ns** | +1.31 ns | +2.31 ns |
+
+From 22.5 ns to 25 ns the layout is the same and the slack moves one for one with the period, so the slow-corner limit is 22.69 ns (44.07 MHz). Without post-global-route repair the 100 MHz slow-corner setup slack is −4.22 ns.
+
+**Utilisation.** At 45 % and 38 % core utilisation, global routing stops on congestion (at 38 %: 93.6 % routing-resource usage, 3,944 overflow). At 30 % the design routes with 0 DRC errors.
+
+**The fanout-513 flop.** In the routed netlist, the highest-fanout flops reach 777, 514, 391 and 234 sinks through the buffer trees LibreLane builds for them. Those nets are not on the slow-corner critical paths. In the 100 MHz run, the ten worst slow-corner setup paths all start at flops reaching 10 to 18 sinks. Once the high-fanout net is buffered, the post-route clock is set by those paths, not by the launch flop that limits the pre-route estimate.
+
+### Reproducing the Post-Route Results
+
+Requires Docker. LibreLane runs from its release container and fetches the pinned sky130 PDK into `~/.ciel` (or `PDK_ROOT`) on the first run.
+
+```sh
+make gds
+```
+
+To use a LibreLane 3.1.0.dev4 installed on the host (for example from its Nix flake) instead of the container:
+
+```sh
+make gds LIBRELANE=librelane
+```
+
+The run takes about 33 minutes on 4 cores with 16 GB of memory. Outputs are written to `build/gds/`. The layout is `build/gds/final/gds/chacha20.gds` and the metrics are `build/gds/final/metrics.json`. Two runs from a clean tree give the same layout: the GDSII files are identical apart from their timestamps, KLayout XOR reports no differences, and every metric matches.

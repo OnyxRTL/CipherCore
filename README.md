@@ -23,7 +23,7 @@ Clone the repository and run a core:
 
 ```sh
 git clone https://github.com/OnyxRTL/CipherCore.git
-cd CipherCore/chacha20
+cd CipherCore/Chacha20
 
 make sim                  # run all testbenches
 make syn LIB=/path/to/sky130_fd_sc_hd__tt_025C_1v80.lib
@@ -35,7 +35,7 @@ Each core directory is self-contained. The `Makefile` in cores that support it d
 
 ## What's Inside
 
-- **[ChaCha20](./chacha20/)** — parameterised ChaCha8/12/20 stream cipher core.
+- **[ChaCha20](./Chacha20/)** — parameterised ChaCha8/12/20 stream cipher core.
 - **[SPECK](./SPECK/)** - parameterized Speck block cipher family
 - **[Trivium](./trivium/)** — lightweight stream cipher core.
 
