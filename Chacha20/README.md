@@ -43,7 +43,7 @@ Area and timing were estimated with an open-source flow (Yosys for synthesis, Op
 | Liberty file | `sky130_fd_sc_hd__tt_025C_1v80.lib` | `sg13g2_stdcell_typ_1p20V_25C.lib` | `NangateOpenCellLibrary_typical.lib` |
 | Nominal voltage | 1.80 V | 1.20 V | 1.10 V |
 | Corner | TT, 25 °C, 1.80 V | typ, 25 °C, 1.20 V | typical |
-| Input driving cell | `sky130_fd_sc_hd__buf_4` (see `constr.txt`) | `sg13g2_buf_4` (see `constr.txt`) | `BUF_X4` (see `constr.txt`) |
+| Input driving cell | `sky130_fd_sc_hd__buf_4` (see `constr_sky130.txt`) | `sg13g2_buf_4` (see `constr_ihp.txt`) | `BUF_X4` (see `constr_nangate.txt`) |
 | Timing tool | OpenSTA 3.1.0 | OpenSTA 3.1.0 | OpenSTA 3.1.0 |
 
 ### Area
